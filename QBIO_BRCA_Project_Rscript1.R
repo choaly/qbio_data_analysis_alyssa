@@ -25,7 +25,7 @@ query <- GDCquery(project = "TCGA-BRCA",
                   data.category = "Transcriptome Profiling",
                   data.type = "Gene Expression Quantification",
                   workflow.type = "HTSeq - Counts")
-GDCdownload(query) #only need this line of code ONCE to download the data
+#GDCdownload(query) #only need this line of code ONCE to download the data
 sum_exp <- GDCprepare(query)
 
 
@@ -111,3 +111,14 @@ dev.off()
 jpeg("GATA3_log_counts_by_age.jpg")
 boxplot(GATA3_counts_log~age_category, data = patient_data, main = "Boxplot of HTSeq - Counts for GATA3 by Age Category")
 dev.off()
+
+clin_query <- GDCquery(project = "TCGA-BRCA", data.category="Clinical", filetype="xml")
+GDCdownload( clin_query ) #only need this command once. This downloads the files onto your system.
+clinic <- GDCprepare_clinic(clin_query, clinical.info="patient")
+names(clinic)[names(clinic) == "days_to_last_followup"] = "days_to_last_follow_up" #fixes an error in the name of the column
+
+age_clinical = clinic$age_at_initial_pathologic_diagnosis
+clinic$age_category = ifelse(age_clinical < 40, "Young", ifelse(age_clinical >= 60, "Old", "Mid"))
+
+
+TCGAanalyze_survival(clinic, "age_category")
