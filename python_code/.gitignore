@@ -14,7 +14,7 @@
 *.code-workspace
 .history/
 
-
-#CSVs
+#Other
 *.csv
 requirements.txt
+*.ipynb_checkpoints
